@@ -39,7 +39,7 @@ export class AuthService {
     return this.generateTokens(user.id, user.email);
   }
 
-  async refresh(refreshToken: string) {
+  refresh(refreshToken: string) {
     try {
       const payload = this.jwt.verify<{ sub: string; email: string }>(refreshToken);
       return this.generateTokens(payload.sub, payload.email);
