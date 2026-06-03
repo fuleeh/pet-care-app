@@ -1,0 +1,9 @@
+{
+  "name": "pet-care-app",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend",
+    "shared"
+  ]
+}
