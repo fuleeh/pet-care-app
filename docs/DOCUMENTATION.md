@@ -955,9 +955,27 @@ jobs:
       - run: yarn install --frozen-lockfile
       - run: yarn --cwd ${{ matrix.workspace }} lint
       - run: yarn --cwd ${{ matrix.workspace }} build
+
+  prisma-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'yarn'
+      - run: yarn install --frozen-lockfile
+      - run: npx prisma validate
+        working-directory: backend
 ```
 
-**What it does:** On every push/PR to `main`, runs lint + build for both backend and frontend in parallel (matrix strategy). `yarn install --frozen-lockfile` fails if `yarn.lock` is out of date (ensures reproducible builds). The `cache: 'yarn'` action caches `node_modules` for faster subsequent runs.
+**What it does:** On every push/PR to `main`, runs:
+1. **lint-and-build** — matrix over backend + frontend (ESLint + TypeScript compile)
+2. **prisma-validate** — validates `schema.prisma` syntax and model definitions (no DB needed)
+
+`yarn install --frozen-lockfile` fails if `yarn.lock` is out of date (ensures reproducible builds). The `cache: 'yarn'` action caches `node_modules` for faster subsequent runs.
+
+**TODO:** Add `yarn --cwd backend test` and `yarn --cwd frontend test` once tests exist.
 
 ---
 
