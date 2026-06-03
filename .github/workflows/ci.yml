@@ -24,3 +24,15 @@ jobs:
       - run: yarn install --frozen-lockfile
       - run: yarn --cwd ${{ matrix.workspace }} lint
       - run: yarn --cwd ${{ matrix.workspace }} build
+
+  prisma-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'yarn'
+      - run: yarn install --frozen-lockfile
+      - run: npx prisma validate
+        working-directory: backend
