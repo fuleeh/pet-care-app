@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  ConflictException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compare, hash } from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service.js';
@@ -17,7 +21,9 @@ export class AuthService {
   ) {}
 
   async register(dto: RegisterDto) {
-    const existing = await this.prisma.user.findUnique({ where: { email: dto.email } });
+    const existing = await this.prisma.user.findUnique({
+      where: { email: dto.email },
+    });
     if (existing) throw new ConflictException('Email already registered');
 
     const passwordHash = await hash(dto.password, SALT_ROUNDS);
@@ -30,7 +36,9 @@ export class AuthService {
   }
 
   async login(dto: LoginDto) {
-    const user = await this.prisma.user.findUnique({ where: { email: dto.email } });
+    const user = await this.prisma.user.findUnique({
+      where: { email: dto.email },
+    });
     if (!user) throw new UnauthorizedException('Invalid credentials');
 
     const valid = await compare(dto.password, user.passwordHash);
@@ -41,7 +49,9 @@ export class AuthService {
 
   refresh(refreshToken: string) {
     try {
-      const payload = this.jwt.verify<{ sub: string; email: string }>(refreshToken);
+      const payload = this.jwt.verify<{ sub: string; email: string }>(
+        refreshToken,
+      );
       return this.generateTokens(payload.sub, payload.email);
     } catch {
       throw new UnauthorizedException('Invalid refresh token');
